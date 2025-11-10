@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Interview System</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-bs-theme="dark">
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="text-center py-4 mb-4">
+            <h1 class="display-4 text-primary">
+                <i class="fas fa-microphone-alt me-3"></i>
+                AI Voice Interview System
+            </h1>
+            <p class="lead text-muted">Complete AI-powered interview platform with real-time analysis and HR reporting</p>
+        </header>
+
+        <!-- System Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div id="systemStatus" class="alert alert-info">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        <span>Loading system components...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+
+                <!-- Setup Section -->
+                <div id="setupSection" class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Interview Setup
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="setupForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="candidateName" class="form-label">
+                                        <i class="fas fa-user me-1"></i>
+                                        Candidate Name *
+                                    </label>
+                                    <input type="text" class="form-control" id="candidateName"
+                                           placeholder="Enter candidate's full name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="position" class="form-label">
+                                        <i class="fas fa-briefcase me-1"></i>
+                                        Position *
+                                    </label>
+                                    <input type="text" class="form-control" id="position"
+                                           placeholder="Enter position title" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>
+                                    Email Address *
+                                </label>
+                                <input type="email" class="form-control" id="email"
+                                       placeholder="Enter candidate's email address" required>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="jdFile" class="form-label">
+                                        <i class="fas fa-file-pdf me-1"></i>
+                                        Job Description File *
+                                    </label>
+                                    <input type="file" class="form-control" id="jdFile"
+                                           accept=".txt,.pdf,.docx" required>
+                                    <div class="form-text">PDF, DOCX, or TXT files (max 10MB)</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="resumeFile" class="form-label">
+                                        <i class="fas fa-file-alt me-1"></i>
+                                        Resume/CV File *
+                                    </label>
+                                    <input type="file" class="form-control" id="resumeFile"
+                                           accept=".txt,.pdf,.docx" required>
+                                    <div class="form-text">PDF, DOCX, or TXT files (max 10MB)</div>
+                                </div>
+                            </div>
+
+                            <!-- Removed Number of Interview Questions selection -->
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                                <button type="button" id="startSetupBtn" class="btn btn-primary btn-lg" disabled>
+                                    <i class="fas fa-rocket me-2"></i>
+                                    Start Interview Setup
+                                </button>
+                            </div>
+                        </form>
+
+                        <div id="setupMessage" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <!-- Processing Section -->
+                <div id="processingSection" class="card mb-4 d-none">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-cogs me-2"></i>
+                            Processing Documents & Generating Questions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress mb-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                 id="progressBar" role="progressbar" style="width: 0%"></div>
+                        </div>
+
+                        <div id="processingStatus" class="alert alert-info">
+                            <div class="d-flex align-items-center">
+                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                <span id="processingText">Processing your documents...</span>
+                            </div>
+                        </div>
+
+                        <div id="processingDetails" class="mt-3">
+                            <p><strong>Current Step:</strong> <span id="currentStep">Uploading files...</span></p>
+                            <p><strong>Progress:</strong> <span id="progressText">0%</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Interview Section -->
+                <div id="voiceSection" class="card mb-4 d-none">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-user-tie me-2"></i>
+                            AI Interviewer Session
+                        </h5>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Avatar Video -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <div class="avatar-container" style="max-width: 400px; margin: 0 auto;">
+                                    <video
+                                        id="avatar-video"
+                                        autoplay
+                                        playsinline
+                                        muted
+                                        style="width: 100%; border-radius: 8px; border: 2px solid #007bff; display: none;"
+                                    ></video>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Connection Status -->
+                        <div id="connectionStatus" class="alert alert-secondary text-center">
+                            <i class="fas fa-wifi me-2"></i>
+                            Ready to connect
+                        </div>
+
+                        <!-- Interview Progress -->
+                        <div id="interviewProgress" class="d-none">
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-success" id="interviewProgressBar"
+                                     role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Audio Levels -->
+                        <div id="audioLevels" class="d-none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-microphone me-1"></i>
+                                        Your Voice Level
+                                    </label>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-warning" id="micLevel"
+                                             role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-volume-up me-1"></i>
+                                        AI Interviewer
+                                    </label>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-info" id="aiLevel"
+                                             role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interview Controls -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                            <button id="connectBtn" class="btn btn-success btn-lg" onclick="connectToInterview()">
+                                <i class="fas fa-plug me-2"></i>
+                                Connect to Interview
+                            </button>
+                            <button id="disconnectBtn" class="btn btn-danger d-none" onclick="disconnectFromInterview()">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                End Interview
+                            </button>
+                        </div>
+
+                        <div id="voiceMessage" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsSection" class="card mb-4 d-none">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Interview Results
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Interview completed successfully! Results have been emailed to you and HR.
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                            <button class="btn btn-primary" onclick="downloadReport()">
+                                <i class="fas fa-download me-2"></i>
+                                Download Report
+                            </button>
+                            <a href="/dashboard" class="btn btn-outline-primary">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                View Dashboard
+                            </a>
+                            <button class="btn btn-outline-secondary" onclick="startNewInterview()">
+                                <i class="fas fa-plus me-2"></i>
+                                New Interview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- LiveKit Client SDK -->
+    <script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

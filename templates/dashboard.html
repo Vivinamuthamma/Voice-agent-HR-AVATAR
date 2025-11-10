@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Dashboard - AI Voice Interview System</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-bs-theme="dark">
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="text-center py-4 mb-4">
+            <h1 class="display-4 text-primary">
+                <i class="fas fa-tachometer-alt me-3"></i>
+                Interview Dashboard
+            </h1>
+            <p class="lead text-muted">Monitor and manage multiple AI-powered voice interviews</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <i class="fas fa-home me-2"></i>
+                    Back to Interview
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <button class="btn btn-outline-primary me-2" onclick="refreshDashboard()">
+                                <i class="fas fa-sync-alt me-1"></i>
+                                Refresh
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- System Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div id="systemStatus" class="alert alert-info">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        <span>Loading dashboard...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overview Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">
+                                    <i class="fas fa-users me-2"></i>
+                                    Total Sessions
+                                </h5>
+                                <h2 class="mb-0" id="totalSessions">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">
+                                    <i class="fas fa-play-circle me-2"></i>
+                                    Active Interviews
+                                </h5>
+                                <h2 class="mb-0" id="activeInterviews">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Completed
+                                </h5>
+                                <h2 class="mb-0" id="completedSessions">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-danger">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Failed
+                                </h5>
+                                <h2 class="mb-0" id="failedSessions">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>
+                            Session Status Distribution
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="statusChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Sessions Over Time
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="timelineChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Interviews Table -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-microphone me-2"></i>
+                            Active Interviews
+                        </h5>
+                        <div>
+                            <!-- Simulation buttons removed as per user preference -->
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped" id="activeInterviewsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Candidate</th>
+                                        <th>Position</th>
+                                        <th>Room</th>
+                                        <th>Participants</th>
+                                        <th>Progress</th>
+                                        <th>Started</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activeInterviewsBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">
+                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                            Loading active interviews...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Sessions Table -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-history me-2"></i>
+                            Recent Sessions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped" id="recentSessionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Candidate</th>
+                                        <th>Position</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Questions</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentSessionsBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">
+                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                            Loading recent sessions...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard is now focused on monitoring real interviews only -->
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='dashboard/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='dashboard/tables.js') }}"></script>
+    <script src="{{ url_for('static', filename='dashboard/charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='dashboard/actions.js') }}"></script>
+    <script src="{{ url_for('static', filename='dashboard/dashboard.js') }}"></script>
+</body>
+</html>

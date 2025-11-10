@@ -1,0 +1,236 @@
+:root {
+    --interview-primary: #6a11cb;
+    --interview-secondary: #2575fc;
+    --interview-success: #28a745;
+    --interview-warning: #ffc107;
+    --interview-danger: #dc3545;
+    --interview-info: #17a2b8;
+}
+
+/* Enhanced card styling */
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--interview-primary), var(--interview-secondary));
+    color: white;
+    border-bottom: none;
+}
+
+/* Progress bars with animations */
+.progress {
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+/* Audio level indicators */
+#micLevel, #aiLevel {
+    transition: width 0.1s ease;
+    min-width: 2%;
+}
+
+/* Button enhancements */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--interview-primary), var(--interview-secondary));
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a0eae, #1e63d8);
+}
+
+/* File input styling */
+.form-control[type="file"] {
+    border-style: dashed;
+    border-width: 2px;
+    padding: 1rem;
+}
+
+.form-control[type="file"]:focus {
+    border-color: var(--interview-primary);
+    box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.25);
+}
+
+/* Alert enhancements */
+.alert {
+    border: none;
+    border-radius: 10px;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+}
+
+/* Spinner animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.custom-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+/* Connection status indicators */
+.status-connected {
+    background: linear-gradient(135deg, var(--interview-success), #20c997);
+    color: white;
+}
+
+.status-connecting {
+    background: linear-gradient(135deg, var(--interview-warning), #e0a800);
+    color: white;
+}
+
+.status-disconnected {
+    background: linear-gradient(135deg, var(--interview-danger), #c82333);
+    color: white;
+}
+
+/* Form enhancements */
+.form-label {
+    font-weight: 600;
+    color: var(--bs-body-color);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--interview-primary);
+    box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.25);
+}
+
+/* Header styling */
+header h1 {
+    background: linear-gradient(135deg, var(--interview-primary), var(--interview-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .d-md-flex .btn {
+        width: auto;
+    }
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--interview-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Hide sections smoothly */
+.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.5s ease;
+}
+
+.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.5s ease;
+}
+
+/* Interview progress indicators */
+.interview-step {
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.interview-step::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--bs-secondary);
+}
+
+.interview-step.active::before {
+    background: var(--interview-primary);
+}
+
+.interview-step.completed::before {
+    background: var(--interview-success);
+    content: '✓';
+    color: white;
+    font-size: 0.7rem;
+    text-align: center;
+    line-height: 1rem;
+}
